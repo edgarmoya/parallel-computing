@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "time.h": "c",
-        "mpi.h": "c"
-    }
-}
