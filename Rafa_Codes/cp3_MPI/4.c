@@ -64,6 +64,7 @@ int main(int argc, char* argv[]) {
     MPI_Datatype col, coltype;
     MPI_Type_vector(rows, 1, cols, MPI_INT, &col);
     MPI_Type_commit(&col);
+    // https://stackoverflow.com/questions/10788180/sending-columns-of-a-matrix-using-mpi-scatter
     MPI_Type_create_resized(col, 0, 1*sizeof(int), &coltype);
     MPI_Type_commit(&coltype);
 
