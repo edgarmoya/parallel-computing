@@ -11,8 +11,12 @@ int main(int argc, char* argv[]) {
     int N;
     int* V;
     int sumV;
+    double start_time, end_time;
 
     MPI_Init(&argc, &argv);
+
+    start_time = MPI_Wtime();
+
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     
@@ -20,6 +24,8 @@ int main(int argc, char* argv[]) {
     if (rank == 0) {
         printf("Ingrese la longitud del vector: ");
         scanf("%d", &N);
+
+        // N = 200000;
 
         if (N % size != 0) {
             printf("La longitud del vector debe ser múltiplo de la cantidad de procesos.\n");
@@ -79,6 +85,17 @@ int main(int argc, char* argv[]) {
         free(V);
     }
     free(localVectDist);
+
+    
+    end_time = MPI_Wtime();
+
+    // Calcular el tiempo de ejecución en paralelo
+    double execution_time = end_time - start_time;
+
+    if (rank == 0) {
+        // Imprimir el tiempo de ejecución en paralelo
+        printf("Tiempo de ejecución: %.5f segundos\n", execution_time);
+    }
 
     MPI_Finalize();
     return 0;

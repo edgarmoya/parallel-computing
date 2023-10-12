@@ -86,13 +86,13 @@ int main(int argc, char **argv) {
         y = (double *)malloc(N * sizeof(double));
     }
 
-    // Difundir el vector "y" a todos los procesos
+    // Difundir el vector y a todos los procesos
     MPI_Bcast(y, N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     // Cantidad de elementos por cada proceso
     elementsPerProcess = N / size;
 
-    // Distribuir el vector "x" por cada proceso
+    // Distribuir el vector x por cada proceso
     local_x = (double *)malloc(elementsPerProcess * sizeof(double));
     MPI_Scatter(x, elementsPerProcess, MPI_DOUBLE, local_x, elementsPerProcess, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
@@ -109,13 +109,11 @@ int main(int argc, char **argv) {
 
     // Liberar memoria
     if( rank == 0 ){
-        free(x);
-        free(y);
+        free(x);        
     }
-
+    free(y);
     free(local_x);    
     free(z);
-    MPI_Finalize();
 
     return 0;
 }

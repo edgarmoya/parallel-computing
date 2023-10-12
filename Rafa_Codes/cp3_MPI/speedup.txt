@@ -1,0 +1,8 @@
+Ej3)
+Para una matriz de tamaño 2000x2000 el tiempo de ejecucion secuencial es T_s = 7.02743 segundos
+Para una matriz de igual tamaño el tiempo de ejecucion con dos procesadores es T_2 =  6.75368 segundos
+S = T_s / T_2 = 7.02743s / 6.75368s = 1,0405
+Ej5)
+Para un vector de tamaño 200000 el tiempo de ejecucion secuencial es T_s = 4.73611 segundos
+Para una matriz de igual tamaño el tiempo de ejecucion con dos procesadores es T_2 = 4.67800 segundos
+S = T_s / T_2 = 4.73611s/4.67800s = 1,01242

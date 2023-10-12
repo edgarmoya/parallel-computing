@@ -17,8 +17,12 @@ int main(int argc, char* argv[]) {
     int* displace_recv;
     int rows_per_process;
     int remaining_rows;
+    double start_time, end_time;
 
     MPI_Init(&argc, &argv);
+
+    start_time = MPI_Wtime();
+
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     
@@ -29,6 +33,9 @@ int main(int argc, char* argv[]) {
 
         printf("Ingrese el número de columnas: ");
         scanf("%d", &cols);
+
+        // rows = 2000;
+        // cols = 2000;
 
         // if (rows % size != 0) {
         //     printf("El número de filas debe ser múltiplo de la cantidad de procesos.\n");
@@ -132,6 +139,17 @@ int main(int argc, char* argv[]) {
     }
     free(localRowSums);
     free(localRowsDist);
+
+    
+    end_time = MPI_Wtime();
+
+    // Calcular el tiempo de ejecución en paralelo
+    double execution_time = end_time - start_time;
+
+    if (rank == 0) {
+        // Imprimir el tiempo de ejecución en paralelo
+        printf("Tiempo de ejecución: %.5f segundos\n", execution_time);
+    }
 
     MPI_Finalize();
     return 0;
