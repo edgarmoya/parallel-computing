@@ -1,0 +1,21 @@
+Alumno: Edgar Moya Cáceres
+
+Ejercicio 3 inciso c)
+Se ejecuta el programa 2 veces para una matriz de tamaño 4000 x 4000, la primera vez utilizando 4 procesos
+y la segunda vez utilizando solo un proceso. Estos fueron los resultados obtenidos:
+
+Tiempo de ejecución en serie: 17.399 segundos
+Tiempo de ejecución en paralelo: 13.532 segundos
+
+El speedup se calcula como:
+S = Ts/Tp = 17.399s/13.532s ≈ 1.286
+
+Ejercicio 5 inciso a)
+Se ejecuta el programa 2 veces para un vector de tamaño 800000, la primera vez utilizando 4 procesos
+y la segunda vez utilizando solo un proceso. Estos fueron los resultados obtenidos:
+
+Tiempo de ejecución en serie: 2.336 segundos
+Tiempo de ejecución en paralelo: 1.958 segundos
+
+El speedup se calcula como:
+S = Ts/Tp = 2.336s/1.958s ≈ 1.193
