@@ -20,42 +20,41 @@ int main(int argc, char *argv[])
     int remaining_rows;
     double start_time, end_time;
 
-    MPI_Init(&argc, &argv);
-
-    start_time = MPI_Wtime();
-
+    MPI_Init(&argc, &argv);    
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     // Lectura de filas y columnas, inicialización de la matriz
     if (rank == 0)
     {
-        printf("Ingrese el número de filas: ");
-        scanf("%d", &rows);
+        // printf("Ingrese el número de filas: ");
+        // scanf("%d", &rows);
 
-        printf("Ingrese el número de columnas: ");
-        scanf("%d", &cols);
+        // printf("Ingrese el número de columnas: ");
+        // scanf("%d", &cols);
 
-        // rows = 2000;
-        // cols = 2000;
+        if (argc != 3) {
+            printf("Uso: %s <filas> <columnas>\n", argv[0]);
+            MPI_Abort(MPI_COMM_WORLD, -1);
+        }
+        
+        if ((rows = atoi(argv[1])) == 0 || (cols = atoi(argv[2])) == 0) {
+            printf("Las filas y las columnas deben ser números enteros.\n");
+            MPI_Abort(MPI_COMM_WORLD, -1);
+        }
 
-        // if (rows % size != 0) {
-        //     printf("El número de filas debe ser múltiplo de la cantidad de procesos.\n");
-        //     MPI_Finalize();
-        //     return 0;
-        // }
 
         srand(time(NULL));
         matrix = (int *)malloc(sizeof(int) * rows * cols);
-        printf("La matriz queda de la siguiente forma:\n");
+        // printf("La matriz queda de la siguiente forma:\n");
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
             {
                 matrix[i * cols + j] = rand() % 10;
-                printf("%d ", matrix[i * cols + j]);
+                // printf("%d ", matrix[i * cols + j]);
             }
-            printf("\n");
+            // printf("\n");
         }
         // Calcular la cantidad de filas que se enviarán y reciviran de cada proceso,
         // los primeros procesos recibiran una fila adicional para complementar el resto
@@ -83,7 +82,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-
+    
     // Enviar el número de filas y columnas a todos los procesos
     MPI_Bcast(&rows, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&cols, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -102,10 +101,9 @@ int main(int argc, char *argv[])
 
     // Distribuir las filas de la matriz entre los procesos
     MPI_Scatterv(matrix, counts_send, displace_send, MPI_INT, localRowsDist, elementsPerProcess, MPI_INT, 0, MPI_COMM_WORLD);
-    // for(int i = 0; i < elementsPerProcess; i++){
-    //     printf("%d ",localRowsDist[i]);
-    // }
-    // printf("%d\n",rank);
+
+    // Tiempo de inicio
+    start_time = MPI_Wtime();
 
     // Calcular la suma de las filas locales
     int localSum;
@@ -128,15 +126,23 @@ int main(int argc, char *argv[])
 
     MPI_Gatherv(localRowSums, rows_per_process, MPI_INT, rowSums, counts_recv, displace_recv, MPI_INT, 0, MPI_COMM_WORLD);
 
+    end_time = MPI_Wtime();
+
+    // Calcular el tiempo de ejecución en paralelo
+    double execution_time = end_time - start_time;
+
     // Imprimir el vector resultante en el proceso 0
     if (rank == 0)
     {
-        printf("Suma de elementos de cada fila:\n");
-        for (int i = 0; i < rows; i++)
-        {
-            printf("Fila %d suma:%d\n", i, rowSums[i]);
-        }
-        printf("\n");
+        // printf("Suma de elementos de cada fila:\n");
+        // for (int i = 0; i < rows; i++)
+        // {
+            // printf("Fila %d suma:%d\n", i, rowSums[i]);
+        // }
+        // printf("\n");
+        
+        // Imprimir el tiempo de ejecución en paralelo
+        printf("Tiempo de ejecución: %.5f segundos\n", execution_time);
     }
 
     // Liberar memoria
@@ -151,17 +157,6 @@ int main(int argc, char *argv[])
     }
     free(localRowSums);
     free(localRowsDist);
-
-    end_time = MPI_Wtime();
-
-    // Calcular el tiempo de ejecución en paralelo
-    double execution_time = end_time - start_time;
-
-    if (rank == 0)
-    {
-        // Imprimir el tiempo de ejecución en paralelo
-        printf("Tiempo de ejecución: %.5f segundos\n", execution_time);
-    }
 
     MPI_Finalize();
     return 0;
