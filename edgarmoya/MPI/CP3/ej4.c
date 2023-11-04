@@ -27,9 +27,9 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     int rows, cols, cols_x_process;
+    MPI_Datatype col, dtype_col;
     int *matrix = NULL;
     int *local_matrix = NULL;
-    int *transposed_matrix = NULL;
     int *column_sum = NULL;
     int *global_column_sum = NULL;
 
@@ -58,14 +58,6 @@ int main(int argc, char *argv[]) {
 
         printf("Matriz inicial:\n");
         print_matrix(matrix, rows, cols);
-
-        // Transponer matriz
-        transposed_matrix = (int *)malloc(cols * rows * sizeof(int));
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                transposed_matrix[j * rows + i] = matrix[i * cols + j];
-            }
-        }
     }
 
     // Difundir el tamaño de la matriz a todos los procesos
@@ -75,9 +67,15 @@ int main(int argc, char *argv[]) {
     // Calcular la cantidad de columnas por proceso
     cols_x_process = cols / size;
 
+    // Elegir los elementos por columnas
+    MPI_Type_vector(rows, 1, cols, MPI_INT, &col);
+    MPI_Type_commit(&col);
+    MPI_Type_create_resized(col, 0, sizeof(int), &dtype_col);
+    MPI_Type_commit(&dtype_col);
+
     // Distribuir las columnas de la matriz a todos los procesos
     local_matrix = (int *)malloc(cols_x_process * rows * sizeof(int));
-    MPI_Scatter(transposed_matrix, cols_x_process * rows, MPI_INT, local_matrix, cols_x_process * rows, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(matrix, cols_x_process, dtype_col, local_matrix, cols_x_process * rows, MPI_INT, 0, MPI_COMM_WORLD);
 
     // Calcular la suma de cada columna localmente
     column_sum = (int *)malloc(cols_x_process * sizeof(int));
@@ -107,7 +105,6 @@ int main(int argc, char *argv[]) {
     free(local_matrix);
 
     if (rank == 0) {
-        free(transposed_matrix);
         free(matrix);
         free(global_column_sum);
     }

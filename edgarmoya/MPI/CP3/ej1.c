@@ -18,25 +18,25 @@ int main(int argc, char* argv[]) {
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
+    MPI_Request request;
+
     if (my_rank == 0) {
         int value_sent = 12345;
         printf("[MPI process %d] I sent value %d.\n", my_rank, value_sent);
 
         // Envío no bloqueante
-        MPI_Request send_request;
-        MPI_Isend(&value_sent, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &send_request);
+        MPI_Isend(&value_sent, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &request);
 
         // Esperar hasta que se complete el envío
-        MPI_Wait(&send_request, MPI_STATUS_IGNORE);
+        MPI_Wait(&request, MPI_STATUS_IGNORE);
     } else {
         int value_received = 0;
 
         // Recepción no bloqueante
-        MPI_Request recv_request;
-        MPI_Irecv(&value_received, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &recv_request);
+        MPI_Irecv(&value_received, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &request);
 
         // Esperar hasta que se complete la recepción
-        MPI_Wait(&recv_request, MPI_STATUS_IGNORE);
+        MPI_Wait(&request, MPI_STATUS_IGNORE);
         printf("[MPI process %d] I received value %d.\n", my_rank, value_received);
     }
 

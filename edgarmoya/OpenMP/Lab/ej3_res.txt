@@ -1,0 +1,6 @@
+Tiempo de ejecución en paralelo: 0.0021
+Tiempo de ejecución en serie: 0.0045
+
+Tamaño de N = 1500
+Cantidad de hilos: 10
+S = Ts/Tp = 0.0045s/0.0021s ≈ 2.142

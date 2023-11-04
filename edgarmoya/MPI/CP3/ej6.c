@@ -15,16 +15,21 @@ void suma(double xloc[], double y[], double z[], int n, int p, int pr)
 
 void suma(double xloc[], double y[], double z[], int n, int p, int pr) {
     // Calcular la cantidad de elementos por bloque
-    int elementos_por_bloque = n / p;
+    int elementos_x_bloque = n / p;
     
     // Calcular el índice de inicio y fin de la parte local de "x" para este proceso
-    int inicio_local = pr * elementos_por_bloque;
-    int fin_local = inicio_local + elementos_por_bloque;
+    int inicio_local = pr * elementos_x_bloque;
+    int fin_local = inicio_local + elementos_x_bloque;
     
     // Sumar la parte local de "x" con la parte correspondiente de "y" y almacenar en "z"
     for (int i = inicio_local; i < fin_local; i++) {
         z[i - inicio_local] = xloc[i - inicio_local] + y[i];
     }
+}
+
+double random_value(double min, double max){
+    double r = (double)rand() / RAND_MAX;
+    return min + r * (max - min);
 }
 
 int main(int argc, char **argv) {
@@ -46,7 +51,7 @@ int main(int argc, char **argv) {
 
         // Comprobar que el tamaño es múltiplo de la cantidad de procesos
         if (N % size != 0) {
-            printf("El tamaño debe ser múltiplo de la cantidad de procesos.\n");
+            printf("La longitud debe ser múltiplo de la cantidad de procesos.\n");
             MPI_Abort(MPI_COMM_WORLD, -1);
         }
 
@@ -55,13 +60,13 @@ int main(int argc, char **argv) {
         // Generar un vector "x" con números aleatorios
         x = (double *)malloc(N * sizeof(double));
         for (int i = 0; i < N; i++){
-            x[i] = rand() % 10;
+            x[i] = random_value(1.0, 10.0);
         }
         
         // Generar un vector "y" con números aleatorios
         y = (double *)malloc(N * sizeof(double));
         for (int i = 0; i < N; i++){
-            y[i] = rand() % 10;
+            y[i] = random_value(1.0, 10.0);
         }
 
         // Imprimir vectores
@@ -76,12 +81,14 @@ int main(int argc, char **argv) {
             printf("%.2lf ", y[i]);
         }
         printf("\n");
-    }else{
-        y = (double *)malloc(N * sizeof(double));
     }
 
     // Difundir el tamaño del vector a todos los procesos
     MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (rank != 0){
+        y = (double *)malloc(N * sizeof(double));
+    }
 
     // Difundir el vector "y" a todos los procesos
     MPI_Bcast(y, N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -105,11 +112,13 @@ int main(int argc, char **argv) {
     printf("\n");
 
     // Liberar memoria
-    free(x);
+    if (rank == 0){
+        free(x);
+        free(y);
+    }
     free(local_x);
-    free(y);
     free(z);
-    MPI_Finalize();
 
+    MPI_Finalize();
     return 0;
 }
