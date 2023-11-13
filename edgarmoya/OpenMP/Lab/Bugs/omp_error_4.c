@@ -1,23 +1,23 @@
-/******************************************************************************
-* FILE: omp_bug4.c
-* 
-* Error: segmentation fault.
-******************************************************************************/
+
+/* Edgar Moya Cáceres */
+
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define N 100
+#define N 1048
 
-int main (int argc, char *argv[]) 
-{
+int main (int argc, char *argv[]) {
   int nthreads, tid, i, j;
-  double a[N][N];
 
-  /* Fork a team of threads with explicit variable scoping */
-  #pragma omp parallel shared(nthreads) private(i, j, tid)     // Quitar a 'a' como privada
+  // Se reserva memoria para la matriz dinámicamente
+  // De esta manera se guarda en el heap en lugar del stack
+  double **a = (double **)malloc(N * sizeof(double *));
+  for (int i = 0; i < N; i++){
+    a[i] = (double *)malloc(N * sizeof(double));
+  }
+
+  #pragma omp parallel shared(nthreads) private(i, j, tid)
   {  
-    //double private_a[N][N]; // Declarar una copia privada de 'a' para cada hilo
-
     /* Obtain/print thread info */
     tid = omp_get_thread_num();
     if (tid == 0) {
@@ -26,15 +26,11 @@ int main (int argc, char *argv[])
     }
     printf("Thread %d starting...\n", tid);
 
-    /* Each thread works on its own private copy of the array */
     for (i=0; i<N; i++)
       for (j=0; j<N; j++)
         a[i][j] = tid + i + j;
 
-    /* For confirmation */
     printf("Thread %d done. Last element= %f\n", tid, a[N-1][N-1]);
-
-  }  /* All threads join master thread and disband */
-
+  }
 }
 
