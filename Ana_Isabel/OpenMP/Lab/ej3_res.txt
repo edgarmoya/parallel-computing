@@ -1,0 +1,7 @@
+./3 10000 10
+Tiempo de ejecución en paralelo: 0.2011
+Tiempo de ejecución en serie: 0.3940
+
+Tamaño de N = 10000
+Cantidad de hilos: 10
+S = Ts/Tp = 0.3940s/0.2011s ≈ 1.959

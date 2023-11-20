@@ -1,94 +1,122 @@
+/* Implementar el producto de una matriz B de dimensión N x N por un 
+vector c de dimensión N */
+
+/* Edgar Moya Cáceres */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 #include <omp.h>
 
-#define N 1000 // Tamaño de la matriz y el vector
-
 // Función para imprimir una matriz
-void print_matrix(double matriz[][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
+/*void print_matrix(double **matriz, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             printf("%.1f ", matriz[i][j]);
         }
         printf("\n");
     }
-}
+}*/
 
 // Función para imprimir un vector
-void print_vector(double vector[]) {
-    for (int i = 0; i < N; i++) {
+/*void print_vector(double *vector, int size) {
+    for (int i = 0; i < size; i++) {
         printf("%.1f ", vector[i]);
     }
     printf("\n");
-}
+}*/
 
-void prodmv(double a[N], double c[N], double B[N][N]){
-    int i, j;
-    double sum;
-    for (i = 0; i < N; i++) {
-        sum=0;
-        for(j=0;j<N;j++)
-            sum += B[i][j] * c[j];
-        a[i] = sum;
+// Función para realizar el producto de una matriz B por un vector c
+void prodmv(double *a, double *c, double **B, int size) {
+    for (int i = 0; i < size; i++) {
+        a[i] = 0.0;
+        for (int j = 0; j < size; j++) {
+            a[i] += B[i][j] * c[j];
+        }
     }
 }
 
-int main() {
+// Función para generar un número aleatorio en un rango específico
+double random_value(double min, double max){
+    double r = (double)rand() / RAND_MAX;
+    return min + r * (max - min);
+}
+
+int main(int argc, char *argv[]) {
     int i, j;
-    double sum;
-    double a[N], c[N];
-    double B[N][N];
+    double itime, ftime, exec_time;
 
-    omp_set_num_threads(10);
+    // Comprobar si se proporcionaron los argumentos requeridos
+    if (argc != 3) {
+        fprintf(stderr, "Uso: %s <tamaño> <cantidad de hilos>\n", argv[0]);
+        return 1;
+    }
 
-    // Inicializar c y B
+    int N = atoi(argv[1]);          // Tamaño
+    int nthreads = atoi(argv[2]);   // Cantidad de hilos
+
+    // Configura la cantidad de hilos a utilizar con OpenMP
+    omp_set_num_threads(nthreads);
+
+    // Reservar memoria para la matriz y los vectores
+    double *a = (double *)malloc(sizeof(double) * N);
+    double *c = (double *)malloc(sizeof(double) * N);
+
+    double **B = (double **)malloc(N * sizeof(double *));
+    for (int i = 0; i < N; i++){
+        B[i] = (double *)malloc(N * sizeof(double));
+    }
+
+    // Inicializar c y B con valores aleatorios
     srand(time(NULL));
     for (int i = 0; i < N; i++)
         for (int j = 0; j < N; j++)
-            B[i][j] = rand() % 10;
+            B[i][j] = random_value(1.0, 10.0);
     
     for (int i = 0; i < N; i++)
-        c[i] = rand() % 10;
+        c[i] = random_value(1.0, 10.0);
 
-    // Calcular tiempo de ejecución
-    double itime, ftime, exec_time; 
+    // Iniciar tiempo de ejecución en paralelo
     itime = omp_get_wtime();
 
-    #pragma omp parallel for private(j, sum)
+    #pragma omp parallel for private(i, j) shared(a, c, B, N)
         for (i = 0; i < N; i++) {
-            sum = 0;
+            a[i] = 0.0;
             for (j = 0; j < N; j++) {
-                sum += B[i][j] * c[j];
+                a[i] += B[i][j] * c[j];
             }
-            a[i] = sum;
         }
 
     // Resultados del tiempo de ejecución en paralelo
     ftime = omp_get_wtime(); 
-    exec_time = ftime - itime; 
+    exec_time = ftime - itime;
     printf("Tiempo de ejecución en paralelo: %.4f\n", exec_time);
+    
+    //*********//
 
-
-    // Calcula la media en serie para comparar
+    // Iniciar tiempo de ejecución en serie
     double time_spent = 0.0;
     clock_t begin = clock();
 
-    double aa[N];
-    prodmv(aa, c, B);
- 
-    // Resultados del tiempo de ejecución en paralelo
+    // Calcula la media en serie para comparar
+    double *a_serie = (double *)malloc(sizeof(double) * N);
+    prodmv(a_serie, c, B, N);
+
+    // Resultados del tiempo de ejecución en serie
     clock_t end = clock();
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
- 
+
     printf("Tiempo de ejecución en serie: %.4f\n", time_spent);
 
-    // El resultado estará en el arreglo 'a'
-    // print_matrix(B);
-    // print_vector(c);
-    // print_vector(a);
-    // print_vector(aa);
-
+    // Liberar memoria
+    free(a);
+    free(c);
+    for (int i = 0; i < N; i++) {
+        free(B[i]);
+    }
+    free(B);
+    free(a_serie);
+    
     return 0;
 }

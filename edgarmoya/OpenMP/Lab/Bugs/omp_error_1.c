@@ -1,6 +1,6 @@
-/******************************************************************************
-* FILE: omp_error_1.c
-******************************************************************************/
+
+/* Edgar Moya Cáceres */
+
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,16 +17,28 @@ int main (int argc, char *argv[]) {
     a[i] = b[i] = i * 1.0;
   chunk = CHUNKSIZE;
 
-  #pragma omp parallel for shared(a,b,c,chunk) private(i,tid) schedule(static, chunk)
-    // tid = omp_get_thread_num();
-    // la directiva #pragma omp parallel for no está encerrando todo el bucle for
-    for (i=0; i < N; i++) {
-      tid = omp_get_thread_num(); // Se hace innecesariamente en cada iteración
+  /* ORIGINAL */
+  /*#pragma omp parallel for shared(a,b,c,chunk) private(i,tid) schedule(static,chunk)
+  {
+    tid = omp_get_thread_num();   // La directiva "#pragma omp parallel for" debe encerrar solamente el bucle for
+    for (i=0; i < N; i++){
+      tid = omp_get_thread_num();  // Se hace innecesariamente en cada iteración
       c[i] = a[i] + b[i];
       printf("tid= %d i= %d c[i]= %f\n", tid, i, c[i]);
     }
-    /* end of parallel for construct */
+  }*/
 
+  /* SOLUCIÓN DE LOS ERRORES PLANTEADOS */
+  #pragma omp parallel shared(a, b, c, chunk) private(i, tid)
+  {
+    tid = omp_get_thread_num();   // Ahora se ejecuta solo una vez por cada hilo, para evitar llamadas innecesarias
+    #pragma omp for schedule(static, chunk)
+      for (i=0; i < N; i++) {
+        c[i] = a[i] + b[i];
+        printf("tid= %d i= %d c[i]= %f\n", tid, i, c[i]);
+      }
+  }
+    
   return 0;
 
 }

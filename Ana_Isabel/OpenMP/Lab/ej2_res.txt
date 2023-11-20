@@ -1,0 +1,9 @@
+
+Media calculada en paralelo es: 4.50
+Tiempo de ejecución en paralelo es: 0.0172
+Media calculada en serie es: 4.50
+Tiempo de ejecución en serie: 0.0438
+
+Tamaño del arreglo = 10000000
+Cantidad de hilos: 10
+S = Ts/Tp = 0.0438s/ 0.0172s ≈ 2.546
