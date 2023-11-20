@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
         B[i] = malloc(sizeof(double) * N);
     }
 
-    omp_set_num_threads(10);
+    omp_set_num_threads(8);
 
     // Inicializar c y B
     srand(time(NULL));

@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    omp_set_num_threads(10);
+    omp_set_num_threads(8);
 
     int *array = malloc(sizeof(int)*n);
    
