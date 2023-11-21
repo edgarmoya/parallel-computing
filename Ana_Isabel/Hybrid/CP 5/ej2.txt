@@ -1,0 +1,33 @@
+Con:
+mpirun -np 2 ej2 5 10000
+
+Obtenemos:
+Producto escalar: 283310
+Tiempo de ejecución en paralelo: 0.0002
+Producto escalar: 283310
+Tiempo de ejecución en serie: 0.0000
+El speedup (St/Sp) es: 0.201884
+La eficacia es: 0.100942
+
+------------------------------------------
+Con:
+mpirun -np 2 ej2 5 1000000
+
+Obtenemos:
+Producto escalar: 28491841
+Tiempo de ejecución en paralelo: 0.0007
+Producto escalar: 28491841
+Tiempo de ejecución en serie: 0.0042
+El speedup (St/Sp) es: 5.829194
+La eficacia es: 2.914597
+-------------------------------------------
+Con:
+mpirun -np 2 ej2 5 10000000
+
+Obtenemos:
+Producto escalar: 202536272
+Tiempo de ejecución en paralelo: 0.0063
+Producto escalar: 202536272
+Tiempo de ejecución en serie: 0.0590
+El speedup (St/Sp) es: 9.438102
+La eficacia es: 4.719051

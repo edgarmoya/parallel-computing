@@ -1,0 +1,20 @@
+Con:
+mpirun -np 2 ej3 1000
+
+Obtenemos:
+El valor calculado de PI es: 3.14159273692312757120
+El error cometido es: 0.00000008333333445520
+-------------------------------------------------
+Con:
+mpirun -np 2 ej3 100
+
+Obtenemos:
+El valor calculado de PI es: 3.14160098692312450552
+El error cometido es: 0.00000833333333138953
+---------------------------------------------------
+Con:
+mpirun -np 2 ej3 1000000
+
+Obtenemos:
+El valor calculado de PI es: 3.14159265358987527250
+El error cometido es: 0.00000000000008215650
