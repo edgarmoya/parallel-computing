@@ -30,7 +30,10 @@ int main(int argc, char *argv[]) {
         }
 
         // Obtener la cantidad de pasos
-        num_steps = atol(argv[1]);       
+        if ((num_steps = atol(argv[1])) == 0) {
+            printf("El número de pasos debe ser un número entero.\n");
+            MPI_Abort(MPI_COMM_WORLD, -1);
+        }    
 
         // Comprobar que la cantidad de pasos es múltiplo de la cantidad de procesos
         if (num_steps % size != 0) {
