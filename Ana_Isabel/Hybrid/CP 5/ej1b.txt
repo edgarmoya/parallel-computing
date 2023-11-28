@@ -1,0 +1,26 @@
+Con: 
+mpirun -np 2 ej1b 5 1000 1000
+
+Obtenemos:
+Tiempo de ejecución (paralelo): 0.003489 seg
+Tiempo de ejecución (secuencial): 0.003742 seg
+El speedup (St/Sp) es: 1.072422
+La eficacia es: 0.536211
+---------------------------------------------------
+Con:
+mpirun -np 2 ej1b 5 2000 2000
+
+Obtenemos:
+Tiempo de ejecución (paralelo): 0.012386 seg
+Tiempo de ejecución (secuencial): 0.016254 seg
+El speedup (St/Sp) es: 1.312256
+La eficacia es: 0.656128
+----------------------------------------------------
+Con:
+mpirun -np 2 ej1b 5 10000 10000
+
+Obtenemos:
+Tiempo de ejecución (paralelo): 0.261637 seg
+Tiempo de ejecución (secuencial): 0.420543 seg
+El speedup (St/Sp) es: 1.607354
+La eficacia es: 0.803677
