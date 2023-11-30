@@ -53,4 +53,5 @@ void dotLauncher(int *res, const int *a, const int *b, int n)
 
     cudaFree(d_res);
     cudaFree(d_a);
-cudaFree(
+    cudaFree(d_b);
+}
