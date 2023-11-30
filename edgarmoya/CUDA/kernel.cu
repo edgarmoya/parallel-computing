@@ -8,13 +8,6 @@ void dotKernel(int *d_res, const int *d_a, const int *d_b, int n) {
     const int idx = threadIdx.x + blockDim.x * blockIdx.x;
     if (idx >= n) return;
 
-    /*int prod = d_a[idx] * d_b[idx];
-    if (ATOMIC) {
-        atomicAdd(d_res, prod);
-    } else {
-        *d_res += prod;
-    }*/
-
     const int s_idx = threadIdx.x;
     __shared__ int s_prod[TPB];
     s_prod[s_idx] = d_a[idx] * d_b[idx];
@@ -46,31 +39,10 @@ void dotLauncher(int *res, const int *a, const int *b, int n) {
     cudaMemcpy(d_a, a, n*sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b, n*sizeof(int), cudaMemcpyHostToDevice);
 
-    cudaEvent_t start_gpu, end_gpu;
-    cudaEventCreate(&start_gpu);
-    cudaEventCreate(&end_gpu);
-
-    // Capturar el tiempo de inicio en la GPU
-    cudaEventRecord(start_gpu);
-
     dotKernel<<<(n + TPB - 1)/TPB, TPB>>>(d_res, d_a, d_b, n);
-
-    // Capturar el tiempo de finalización en la GPU
-    cudaEventRecord(end_gpu);
-    cudaEventSynchronize(end_gpu);
-
-    // Calcular la duración e imprimir el resultado en milisegundos
-    float duration_gpu;
-    cudaEventElapsedTime(&duration_gpu, start_gpu, end_gpu);
-    std::cout << "Tiempo de ejecución en GPU: " << duration_gpu << " ms" << std::endl;
-
     cudaMemcpy(res, d_res, sizeof(int), cudaMemcpyDeviceToHost);
     
     cudaFree(d_res);
     cudaFree(d_a);
     cudaFree(d_b);
-
-    // Liberar eventos
-    cudaEventDestroy(start_gpu);
-    cudaEventDestroy(end_gpu);
 }

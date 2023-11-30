@@ -8,7 +8,7 @@ int main() {
     int gpu_res = 0;
     int *a = (int*)malloc(N*sizeof(int));
     int *b = (int*)malloc(N*sizeof(int));
-    //Initialize input arrays
+
     for (int i = 0; i < N; ++i) {
         a[i] = 1;
         b[i] = 1;
@@ -22,6 +22,5 @@ int main() {
 
     free(a);
     free(b);
-
     return 0;
 }
