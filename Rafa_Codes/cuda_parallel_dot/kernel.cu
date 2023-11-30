@@ -8,7 +8,6 @@ __global__ void dotKernel(int *d_res, const int *d_a, const int *d_b, int n)
     const int idx = threadIdx.x + blockDim.x * blockIdx.x;
     if (idx >= n)
         return;
-
     const int s_idx = threadIdx.x;
 
     __shared__ int s_prod[TPB];
@@ -49,10 +48,9 @@ void dotLauncher(int *res, const int *a, const int *b, int n)
     cudaMemcpy(d_a, a, n * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b, n * sizeof(int), cudaMemcpyHostToDevice);
 
-    dotKernel<<<(n + TPB - 1) / TPB, TPB> > >(d_res, d_a, d_b, n);
+    dotKernel<<<(n + TPB - 1) / TPB, TPB>>>(d_res, d_a, d_b, n);
     cudaMemcpy(res, d_res, sizeof(int), cudaMemcpyDeviceToHost);
 
     cudaFree(d_res);
     cudaFree(d_a);
-    cudaFree(d_b);
-}
+cudaFree(

@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=gpu-job
-#SBATCH --output=hello.log
-#SBATCH --error=hello.err
+#SBATCH --output=cuda_out.log
+#SBATCH --error=cuda_out.err
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
